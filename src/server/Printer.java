@@ -59,4 +59,9 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     }
 
+    @Override
+    public Session login(String username, String password) {
+        return auth.login(username, password);
+    }
+
 }
