@@ -12,6 +12,8 @@ public class ServerMain {
 
             Auth auth = new Auth(connection);
 
+            System.out.println(auth.login("katten", "Hej123"));
+
             
 
         } catch (SQLException e) {
