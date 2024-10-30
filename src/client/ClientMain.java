@@ -5,11 +5,11 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import server.PrinterInterface;
+import shared.PrinterInterface;
 
 public class ClientMain {
     public static void main(String[] args) throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry("10.209.70.66",9909);
+        Registry registry = LocateRegistry.getRegistry(9909);
 
         Object printerObject = registry.lookup("printer");
         if (printerObject instanceof PrinterInterface printer) {

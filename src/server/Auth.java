@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
+import shared.Session;
+
 class Auth {
 
     Connection connection;

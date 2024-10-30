@@ -3,6 +3,9 @@ package server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+import shared.PrinterInterface;
+import shared.Session;
+
 public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     Auth auth;
@@ -14,6 +17,8 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     // Overwrite prototype methods with actual functionality:
     public void print(String filename, String printer) throws RemoteException {
+        
+
         System.out.println("Invoked print");
         System.out.println("Filename of " + printer + ": " + filename);
     }
