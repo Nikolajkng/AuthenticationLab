@@ -18,11 +18,8 @@ public class ServerMain {
             Printer printer = new Printer(auth);
 
             Registry registry = LocateRegistry.createRegistry(9909);
-            // app.listen()
 
             registry.rebind("printer", printer);
-            //app.get("/printer", (res,res) => printer.whatever)
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
