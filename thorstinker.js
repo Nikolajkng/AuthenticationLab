@@ -1,1 +1,0 @@
-hej thor jeg hacker dig
