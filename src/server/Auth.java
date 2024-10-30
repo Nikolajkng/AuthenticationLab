@@ -9,6 +9,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
+import javax.management.RuntimeErrorException;
+
 @SuppressWarnings("unused")
 class Auth {
 
@@ -41,27 +43,27 @@ class Auth {
         return null;
     }
 
-    public boolean authenticate(Session clientSession) {
+    public void authenticate(Session clientSession) {
         Session session = sessions.get(clientSession.token());
         // Ignore the info in clientSession. It is not to be trusted
         if (session == null) {
             // invalid session key
-            return false;
+            throw new RuntimeException("Not authenticated");
         }
 
         if (Duration.between(session.timestamp(), Instant.now()).getSeconds() > 60 * 10) {
             // Remove from hashmap and return false;
             sessions.remove(session.token());
-            return false;
+            throw new RuntimeException("Not authenticated");
         }
-        return true;
     }
 
     public boolean register(String username, String password) {
         String salt = "" + new SecureRandom().nextInt();
         try {
             var stmt = connection
-                    .prepareStatement("insert into users (username, pass_salt,pass_hash) values (?,md5(?,?),?)");
+                    .prepareStatement(
+                            "insert into users (username, pass_hash,pass_salt) values (?,md5(concat(?,?)),?)");
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.setString(3, salt);

@@ -1,7 +1,6 @@
 package server;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 public record Session(UUID token, Instant timestamp, String userid) {

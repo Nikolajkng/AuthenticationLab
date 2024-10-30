@@ -5,14 +5,18 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class PrinterMethods extends UnicastRemoteObject implements PrinterInterface {
 
-    protected PrinterMethods() throws RemoteException {
+    Auth auth;
+
+    protected PrinterMethods(Auth auth) throws RemoteException {
         super();
+        this.auth = auth;
     }
 
     // Overwrite prototype methods with actual functionality:
     public void print(String filename, String printer) throws RemoteException {
+
         System.out.println("Invoked print");
-        System.out.println("Filename of " + printer +": "+ filename);
+        System.out.println("Filename of " + printer + ": " + filename);
     }
 
     public void queue(String printer) throws RemoteException {
@@ -23,12 +27,10 @@ public class PrinterMethods extends UnicastRemoteObject implements PrinterInterf
     public void topQueue(String printer, int job) throws RemoteException {
         System.out.println("Invoked topQueue");
 
-
     }
 
     public void start() throws RemoteException {
         System.out.println("Invoked start");
-
 
     }
 
@@ -40,12 +42,10 @@ public class PrinterMethods extends UnicastRemoteObject implements PrinterInterf
     public void restart() throws RemoteException {
         System.out.println("Invoked restart");
 
-
     }
 
     public void status(String printer) throws RemoteException {
         System.out.println("Invoked status");
-
 
     }
 
@@ -59,5 +59,4 @@ public class PrinterMethods extends UnicastRemoteObject implements PrinterInterf
 
     }
 
-    
 }
