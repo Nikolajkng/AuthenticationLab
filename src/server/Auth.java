@@ -1,5 +1,6 @@
 package server;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,13 +23,11 @@ class Auth {
 
         try {
             PreparedStatement stmt = connection
-                    .prepareStatement("select userid from users where username = ? and md5(concat(?,pass_salt)) = pass_hash");
+                    .prepareStatement(
+                            "select userid from users where username = ? and md5(concat(?,pass_salt)) = pass_hash");
             stmt.setString(1, username);
             stmt.setString(2, password);
             ResultSet result = stmt.executeQuery();
-            System.out.println(result.getString("userid"));
-
-
             if (result.first()) {
                 String userid = result.getString("userid");
                 Session session = new Session(userid);
@@ -58,4 +57,26 @@ class Auth {
         return true;
     }
 
+    public boolean register(String username, String password) {
+        String salt = "" + new SecureRandom().nextInt();
+        try {
+            var stmt = connection
+                    .prepareStatement("insert into users (username, pass_salt,pass_hash) values (?,md5(?,?),?)");
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, salt);
+            stmt.setString(4, salt);
+            int rows = stmt.executeUpdate();
+            if (rows == 1) {
+                // Successfully inserted 1 user
+                return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return false;
+
+    }
 }
