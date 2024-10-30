@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 class Auth {
 
     Connection connection;
