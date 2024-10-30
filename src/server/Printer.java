@@ -14,18 +14,21 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     // Overwrite prototype methods with actual functionality:
     public void print(String filename, String printer) throws RemoteException {
-
         System.out.println("Invoked print");
         System.out.println("Filename of " + printer + ": " + filename);
     }
 
     public void queue(String printer) throws RemoteException {
         System.out.println("Invoked queue");
+        System.out.println("Printer: " + printer);
 
     }
 
     public void topQueue(String printer, int job) throws RemoteException {
         System.out.println("Invoked topQueue");
+        System.out.println("Printer: " + printer);
+        System.out.println("Job: " + job);
+
 
     }
 
@@ -46,16 +49,20 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     public void status(String printer) throws RemoteException {
         System.out.println("Invoked status");
-
+        System.out.println("Printer: " + printer);
     }
 
     public void setConfig(String parameter, String value) throws RemoteException {
         System.out.println("Invoked setConfig");
+        System.out.println("Parameter: " + parameter);
+        System.out.println("Value: " + value);
+
 
     }
 
     public void readConfig(String parameter) throws RemoteException {
         System.out.println("Invoked readConfig");
+        System.out.println("Parameter:" + parameter);
 
     }
 
