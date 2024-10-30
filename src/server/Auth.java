@@ -9,9 +9,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.management.RuntimeErrorException;
-
-@SuppressWarnings("unused")
 class Auth {
 
     Connection connection;
@@ -21,7 +18,7 @@ class Auth {
         this.connection = connection;
     }
 
-    public Session login(String username, String password) {
+    public synchronized Session login(String username, String password) {
 
         try {
             PreparedStatement stmt = connection
@@ -43,7 +40,7 @@ class Auth {
         return null;
     }
 
-    public void authenticate(Session clientSession) {
+    public synchronized void authenticate(Session clientSession) {
         Session session = sessions.get(clientSession.token());
         // Ignore the info in clientSession. It is not to be trusted
         if (session == null) {

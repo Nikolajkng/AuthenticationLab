@@ -3,11 +3,11 @@ package server;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class PrinterMethods extends UnicastRemoteObject implements PrinterInterface {
+public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     Auth auth;
 
-    protected PrinterMethods(Auth auth) throws RemoteException {
+    protected Printer(Auth auth) throws RemoteException {
         super();
         this.auth = auth;
     }

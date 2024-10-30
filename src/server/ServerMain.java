@@ -6,7 +6,6 @@ import java.rmi.registry.Registry;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.spi.LocaleServiceProvider;
 
 public class ServerMain {
     public static void main(String[] args) throws RemoteException {
@@ -16,9 +15,13 @@ public class ServerMain {
 
             Auth auth = new Auth(connection);
 
-            Registry registry = LocateRegistry.createRegistry(1099);
-            
-            
+            Printer printer = new Printer(auth);
+
+            Registry registry = LocateRegistry.createRegistry(9909);
+            // app.listen()
+
+            registry.rebind("printer", printer);
+            //app.get("/printer", (res,res) => printer.whatever)
 
         } catch (SQLException e) {
             e.printStackTrace();
