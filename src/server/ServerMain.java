@@ -48,7 +48,7 @@ public class ServerMain {
             throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException,
             UnrecoverableKeyException, KeyManagementException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        try (FileInputStream keyStream = new FileInputStream("keystore.jks")) {
+        try (FileInputStream keyStream = new FileInputStream("secret_printer_folder/keystore.jks")) {
             keyStore.load(keyStream, CERT_PASSWORD);
         }
 
