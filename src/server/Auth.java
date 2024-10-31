@@ -39,7 +39,7 @@ class Auth {
             e.printStackTrace();
         }
 
-        return null;
+        throw new RuntimeException("Invalid username or password");
     }
 
     public synchronized void authenticate(Session clientSession) {
@@ -57,7 +57,7 @@ class Auth {
         }
     }
 
-    public boolean register(String username, String password) {
+    public synchronized boolean register(String username, String password) {
         String salt = "" + new SecureRandom().nextInt();
         try {
             var stmt = connection

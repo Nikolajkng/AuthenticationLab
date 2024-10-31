@@ -16,56 +16,61 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
     }
 
     // Overwrite prototype methods with actual functionality:
-    public void print(String filename, String printer) throws RemoteException {
-        
-
+    public void print(Session session, String filename, String printer) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked print");
         System.out.println("Filename of " + printer + ": " + filename);
     }
 
-    public void queue(String printer) throws RemoteException {
+    public void queue(Session session, String printer) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked queue");
         System.out.println("Printer: " + printer);
 
     }
 
-    public void topQueue(String printer, int job) throws RemoteException {
+    public void topQueue(Session session, String printer, int job) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked topQueue");
         System.out.println("Printer: " + printer);
         System.out.println("Job: " + job);
 
-
     }
 
-    public void start() throws RemoteException {
+    public void start(Session session ) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked start");
 
     }
 
-    public void stop() throws RemoteException {
+    public void stop(Session session) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked stop");
 
     }
 
-    public void restart() throws RemoteException {
+    public void restart(Session session) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked restart");
 
     }
 
-    public void status(String printer) throws RemoteException {
+    public void status(Session session, String printer) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked status");
         System.out.println("Printer: " + printer);
     }
 
-    public void setConfig(String parameter, String value) throws RemoteException {
+    public void setConfig(Session session, String parameter, String value) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked setConfig");
         System.out.println("Parameter: " + parameter);
         System.out.println("Value: " + value);
 
-
     }
 
-    public void readConfig(String parameter) throws RemoteException {
+    public void readConfig(Session session, String parameter) throws RemoteException {
+        auth.authenticate(session);
         System.out.println("Invoked readConfig");
         System.out.println("Parameter:" + parameter);
 
@@ -73,6 +78,12 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
 
     @Override
     public Session login(String username, String password) {
+        return auth.login(username, password);
+    }
+
+    @Override
+    public Session register(String username, String password) throws RemoteException {
+        auth.register(username, password);
         return auth.login(username, password);
     }
 
