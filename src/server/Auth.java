@@ -54,7 +54,7 @@ class Auth {
         if (Duration.between(session.timestamp(), Instant.now()).getSeconds() > 60 * 10) {
             // Remove from hashmap and return false;
             sessions.remove(session.token());
-            throw new RuntimeException("Not authenticated");
+            throw new RuntimeException("Session expired");
         }
     }
 
