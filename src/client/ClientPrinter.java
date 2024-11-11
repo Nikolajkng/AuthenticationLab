@@ -3,11 +3,11 @@ package client;
 import java.rmi.RemoteException;
 
 import shared.PrinterInterface;
-import shared.Session;
+import shared.ClientSession;
 
 public class ClientPrinter {
     PrinterInterface printer;
-    Session session;
+    ClientSession session;
 
     ClientPrinter(String username, String password, PrinterInterface printer) throws RemoteException {
         this.printer = printer;

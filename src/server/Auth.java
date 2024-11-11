@@ -9,18 +9,18 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
-import shared.Session;
+import shared.ClientSession;
 
 class Auth {
 
     Connection connection;
-    HashMap<UUID, Session> sessions = new HashMap<>();
+    HashMap<UUID, ServerSession> sessions = new HashMap<>();
 
     Auth(Connection connection) {
         this.connection = connection;
     }
 
-    public synchronized Session login(String username, String password) {
+    public synchronized ClientSession login(String username, String password) {
 
         try {
             PreparedStatement stmt = connection
@@ -31,9 +31,9 @@ class Auth {
             ResultSet result = stmt.executeQuery();
             if (result.first()) {
                 String userid = result.getString("userid");
-                Session session = new Session(userid);
-                sessions.put(session.token(), session);
-                return session;
+                ServerSession session = new ServerSession(userid);
+                sessions.put(session.clientsession().token(), session);
+                return session.clientsession();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,8 +42,9 @@ class Auth {
         throw new RuntimeException("Invalid username or password");
     }
 
-    public synchronized void authenticate(Session clientSession) {
-        Session session = sessions.get(clientSession.token());
+    public synchronized void authenticate(ClientSession clientSession) {
+        ServerSession sSession = sessions.get(clientSession.token());
+        ClientSession session = sSession.clientsession();
         // Ignore the info in clientSession. It is not to be trusted
         if (session == null) {
             // invalid session key
