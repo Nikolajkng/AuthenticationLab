@@ -1,3 +1,0 @@
-url: "jdbc:mariadb://jensogkarsten.site:3306/Printer"
-username: "dtu"
-password: "kage123"
