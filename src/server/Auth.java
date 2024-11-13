@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -81,4 +82,12 @@ class Auth {
         return false;
 
     }
+
+    public synchronized boolean checkAccessControlPolicy(String functionName, UUID userID) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement("select roles from users");
+
+
+        return true;
+    }
+
 }
