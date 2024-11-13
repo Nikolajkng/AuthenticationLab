@@ -43,7 +43,7 @@ class Auth {
         throw new RuntimeException("Invalid username or password");
     }
 
-    public synchronized void authenticate(ClientSession clientSession) {
+    public synchronized String authenticate(ClientSession clientSession) {
         ServerSession sSession = sessions.get(clientSession.token());
         ClientSession session = sSession.clientsession();
         // Ignore the info in clientSession. It is not to be trusted
@@ -57,6 +57,7 @@ class Auth {
             sessions.remove(session.token());
             throw new RuntimeException("Session expired");
         }
+        return sSession.userID();
     }
 
     public synchronized boolean register(String username, String password) {
@@ -83,11 +84,15 @@ class Auth {
 
     }
 
-    public synchronized boolean checkAccessControlPolicy(String functionName, UUID userID) throws SQLException {
+    // TO DO
+    /* 
+    public synchronized void checkAccessControlPolicy(String functionName, String userID) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement("select roles from users");
+        ServerSession sSession =
 
 
-        return true;
+        return ;
     }
+        */
 
 }
