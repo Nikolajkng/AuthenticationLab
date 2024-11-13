@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.KeyManagementException;
@@ -78,18 +80,25 @@ public class ServerMain {
         return result;
     }
 
-    static final char[] CERT_PASSWORD = "jsDR2Zbm".toCharArray();
+    static final char[] loadCertPass() {
+        try {
+            return Files.readString(Path.of("secret_printer_folder/cert_pass.txt")).toCharArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static SslRMIServerSocketFactory getServerSocketFactory()
             throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException,
             UnrecoverableKeyException, KeyManagementException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
+        char[] certPass = loadCertPass();
         try (FileInputStream keyStream = new FileInputStream("secret_printer_folder/keystore.jks")) {
-            keyStore.load(keyStream, CERT_PASSWORD);
+            keyStore.load(keyStream, certPass);
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(keyStore, CERT_PASSWORD);
+        kmf.init(keyStore, certPass);
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(kmf.getKeyManagers(), null, null);

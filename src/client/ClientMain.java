@@ -12,7 +12,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Scanner;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -30,43 +29,14 @@ public class ClientMain {
         if (printerObject instanceof PrinterInterface rawPrinter) {
             
             // For readability:
-            String[] login = fetchUserLogin();
-            String username = login[0];
-            String password = login[1];
+            String username = "katten";
+            String password = "Hej123";
             
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
             printer.queue("jeg vil gerne printe noget coolio!");
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }
-    }
-
-    static String[] fetchUserLogin() throws Exception {
-        // Define variables to hold the username and password
-        String[] result = new String[2];
-
-        // Use of scanner file:
-        File loginFile = new File("secret_printer_folder/logins.txt");
-        try (Scanner sc = new Scanner(loginFile)) {
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim(); 
-
-                if (line.startsWith("username: ")) {
-                    result[0] = line.substring("username: ".length());
-                } else if (line.startsWith("password: ")) {
-                    result[1] = line.substring("password: ".length());
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw new Exception("File not found: " + e.getMessage()); 
-        }
-
-        // Check if both values are set, otherwise throw an exception
-        if (result[0] == null || result[1] == null) {
-            throw new Exception("Error: Username or password not found in the file.");
-        }
-
-        return result;
     }
 
     static RMIClientSocketFactory getClientSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
