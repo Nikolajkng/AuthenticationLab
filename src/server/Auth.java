@@ -85,14 +85,10 @@ class Auth {
     }
 
     // TO DO
-    /* 
+    
     public synchronized void checkAccessControlPolicy(String functionName, String userID) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement("select roles from users");
-        ServerSession sSession =
-
-
-        return ;
     }
-        */
+        
 
 }
