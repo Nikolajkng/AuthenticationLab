@@ -83,11 +83,20 @@ class Auth {
 
     }
 
-    public synchronized boolean checkAccessControlPolicy(String functionName, UUID userID) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement("select roles from users");
+    public boolean checkAccessControlPolicy(String functionName, String userID) throws SQLException {
+        PreparedStatement stmt = connection.prepareStatement("select * from user_roles where userid = ?");
+        stmt.setString(1, userID);
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            String role_name = res.getString("r_name");
+        }
+
 
 
         return true;
+    }
+    private boolean checkRolesAccess(String functionName, String role) {
+
     }
 
 }
