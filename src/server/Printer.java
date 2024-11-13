@@ -57,12 +57,7 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
     }
 
     public void start(ClientSession session) throws RemoteException {
-        try {
-            auth.checkAccessControlPolicy("start", auth.authenticate(session));
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-        }
+        auth.checkAccessControlPolicy("start", auth.authenticate(session));
 
         System.out.println("Invoked start");
 
