@@ -84,15 +84,20 @@ class Auth {
 
     }
 
-    public void checkAccessControlPolicy(String functionName, String userID) throws SQLException {
-        PreparedStatement stmt = connection.prepareStatement("select * from user_roles where userid = ?");
-        stmt.setString(1, userID);
-        ResultSet res = stmt.executeQuery();
-        while (res.next()) {
-            String role_name = res.getString("r_name");
-            if (checkRolesAccess(functionName, role_name)) {
-                return;
+    public void checkAccessControlPolicy(String functionName, String userID) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement("select * from user_roles where userid = ?");
+            stmt.setString(1, userID);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                String role_name = res.getString("r_name");
+                if (checkRolesAccess(functionName, role_name)) {
+                    return;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Interval server error");
         }
 
         throw new RuntimeException("User not authorized to call function: " + functionName);
@@ -119,6 +124,5 @@ class Auth {
         }
         return false;
     }
-        
 
 }

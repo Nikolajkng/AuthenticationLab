@@ -31,7 +31,7 @@ public class ClientMain {
             String password = "Hej123";
             
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
-            printer.queue("jeg vil gerne printe noget coolio!");
+            printer.readConfig("jeg vil gerne printe noget coolio!");
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }
