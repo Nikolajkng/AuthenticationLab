@@ -83,20 +83,40 @@ class Auth {
 
     }
 
-    public boolean checkAccessControlPolicy(String functionName, String userID) throws SQLException {
+    public void checkAccessControlPolicy(String functionName, String userID) throws SQLException {
         PreparedStatement stmt = connection.prepareStatement("select * from user_roles where userid = ?");
         stmt.setString(1, userID);
         ResultSet res = stmt.executeQuery();
         while (res.next()) {
             String role_name = res.getString("r_name");
+            if (checkRolesAccess(functionName, role_name)) {
+                return;
+            }
         }
 
-
-
-        return true;
+        throw new RuntimeException("User not authorized to call function: " + functionName);
     }
-    private boolean checkRolesAccess(String functionName, String role) {
 
+    private boolean checkRolesAccess(String functionName, String role) throws SQLException {
+        PreparedStatement stmt = connection
+                .prepareStatement("select * from func_access where r_name = ? and f_name = ?");
+        stmt.setString(1, role);
+        stmt.setString(2, functionName);
+        ResultSet res = stmt.executeQuery();
+        if (res.next()) {
+            return true;
+        }
+        // Find subroles
+        PreparedStatement stmtRoles = connection.prepareStatement("select * from role_extentions where upper_role = ?");
+        stmtRoles.setString(1, role);
+        ResultSet roleRes = stmtRoles.executeQuery();
+
+        while (roleRes.next()) {
+            if (checkRolesAccess(functionName, roleRes.getString("lower_role"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
