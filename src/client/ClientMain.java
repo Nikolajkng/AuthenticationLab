@@ -1,9 +1,9 @@
 package client;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
@@ -22,17 +22,21 @@ import shared.PrinterInterface;
 
 public class ClientMain {
     public static void main(String[] args)
-            throws RemoteException, NotBoundException, KeyManagementException, NoSuchAlgorithmException {
+            throws Exception {
         Registry registry = LocateRegistry.getRegistry("localhost", 9909, getClientSocketFactory());
 
         Object printerObject = registry.lookup("printer");
         if (printerObject instanceof PrinterInterface rawPrinter) {
-            ClientPrinter printer = new ClientPrinter("katten", "Hej123", rawPrinter);
+            
+            // For readability:
+            String username = "katten";
+            String password = "Hej123";
+            
+            ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
             printer.queue("jeg vil gerne printe noget coolio!");
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }
-
     }
 
     static RMIClientSocketFactory getClientSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {

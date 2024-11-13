@@ -1,7 +1,11 @@
 package server;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.KeyManagementException;
@@ -13,6 +17,7 @@ import java.security.cert.CertificateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -20,12 +25,15 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 
 public class ServerMain {
-    public static void main(String[] args) throws UnrecoverableKeyException, KeyManagementException, KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, IOException {
+    public static void main(String[] args) throws Exception {
         try {
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:mariadb://jensogkarsten.site:3306/Printer",
-                    "dtu", "kage123");
+            // For readability:
+            String[] databaseInfo = fetchDatabaseLogin();
+            String DB_URL = databaseInfo[0];
+            String DB_username = databaseInfo[1];
+            String DB_password = databaseInfo[2];
+
+            Connection connection = DriverManager.getConnection(DB_URL, DB_username, DB_password);
 
             connection.setAutoCommit(true);
 
@@ -42,18 +50,55 @@ public class ServerMain {
         }
     }
 
-    static final char[] CERT_PASSWORD = "jsDR2Zbm".toCharArray();
+    static String[] fetchDatabaseLogin() throws Exception {
+        // Define variables to hold the database "url, username, password"
+        String[] result = new String[3];
+
+        // Use of scanner file:
+        File loginFile = new File("secret_printer_folder/database_info.txt");
+        try (Scanner sc = new Scanner(loginFile)) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+
+                if (line.startsWith("url: ")) {
+                    result[0] = line.substring("url: ".length());
+                } else if (line.startsWith("username: ")) {
+                    result[1] = line.substring("username: ".length());
+                } else if (line.startsWith("password: ")) {
+                    result[2] = line.substring("password: ".length());
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new Exception("File not found: " + e.getMessage());
+        }
+
+        // Check if both values are set, otherwise throw an exception
+        if (result[0] == null || result[1] == null) {
+            throw new Exception("Error: URL, username or password not found in the file.");
+        }
+
+        return result;
+    }
+
+    static final char[] loadCertPass() {
+        try {
+            return Files.readString(Path.of("secret_printer_folder/cert_pass.txt")).toCharArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     static SslRMIServerSocketFactory getServerSocketFactory()
             throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException,
             UnrecoverableKeyException, KeyManagementException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
+        char[] certPass = loadCertPass();
         try (FileInputStream keyStream = new FileInputStream("secret_printer_folder/keystore.jks")) {
-            keyStore.load(keyStream, CERT_PASSWORD);
+            keyStore.load(keyStream, certPass);
         }
 
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(keyStore, CERT_PASSWORD);
+        kmf.init(keyStore, certPass);
 
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(kmf.getKeyManagers(), null, null);
