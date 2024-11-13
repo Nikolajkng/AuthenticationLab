@@ -2,8 +2,10 @@ package server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 import shared.PrinterInterface;
+import shared.RoleChange;
 import shared.ClientSession;
 
 public class Printer extends UnicastRemoteObject implements PrinterInterface {
@@ -77,6 +79,16 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
         System.out.println("Invoked readConfig");
         System.out.println("Parameter:" + parameter);
 
+    }
+
+    @Override
+    public void updateRoles(ClientSession session, RoleChange[] added, RoleChange[] removed) {
+        auth.checkAccessControlPolicy("updateRoles", auth.authenticate(session));
+        auth.updateRoles(added, removed);
+
+        System.out.println("Updated roles:");
+        System.out.println("Added: " + Arrays.toString(added));
+        System.out.println("Removed: " + Arrays.toString(removed));
     }
 
     @Override

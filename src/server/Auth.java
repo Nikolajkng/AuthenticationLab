@@ -5,12 +5,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
 import shared.ClientSession;
+import shared.RoleChange;
 
 class Auth {
 
@@ -125,4 +127,42 @@ class Auth {
         return false;
     }
 
+    public synchronized void updateRoles(RoleChange[] added, RoleChange[] removes) {
+        // Has to be syncronzied to avoid role update race condition
+
+        for (RoleChange add : added) {
+            try {
+                // Fetch current roles
+                PreparedStatement stmt = connection
+                        .prepareStatement(
+                                "insert into user_roles (r_name, userid )values (?,(select userid from users where username = ?))");
+
+                stmt.setString(1, add.roleName());
+                stmt.setString(2, add.username());
+                stmt.executeUpdate();
+
+            } catch (SQLIntegrityConstraintViolationException e) {
+                System.out.println("User role duplicate ignored: " + add);
+                continue;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Internval server error");
+            }
+        }
+        for (RoleChange rem : removes) {
+            try {
+                // Fetch current roles
+                PreparedStatement stmt = connection
+                        .prepareStatement(
+                                "delete from user_roles where r_name = ? and userid in (select userid from users where username = ?)");
+
+                stmt.setString(1, rem.roleName());
+                stmt.setString(2, rem.username());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Internval server error");
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@ package client;
 import java.rmi.RemoteException;
 
 import shared.PrinterInterface;
+import shared.RoleChange;
 import shared.ClientSession;
 
 public class ClientPrinter {
@@ -49,5 +50,8 @@ public class ClientPrinter {
 
     public void readConfig(String parameter) throws RemoteException {
         this.printer.readConfig(session, parameter);
+    }
+    public void updateRoles(RoleChange[] added, RoleChange[] removed) {
+        this.printer.updateRoles(session, added, removed);
     }
 }
