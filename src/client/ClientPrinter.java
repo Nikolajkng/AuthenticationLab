@@ -51,7 +51,8 @@ public class ClientPrinter {
     public void readConfig(String parameter) throws RemoteException {
         this.printer.readConfig(session, parameter);
     }
-    public void updateRoles(RoleChange[] added, RoleChange[] removed) {
+
+    public void updateRoles(RoleChange[] added, RoleChange[] removed) throws RemoteException {
         this.printer.updateRoles(session, added, removed);
     }
 }

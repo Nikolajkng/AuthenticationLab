@@ -86,7 +86,41 @@ class Auth {
 
     }
 
+    enum AccessControlMethod {
+        RoleBased,
+        ListBased
+    }
+
+    public AccessControlMethod accessControlMethod = AccessControlMethod.ListBased;
+
     public void checkAccessControlPolicy(String functionName, String userID) {
+        switch (accessControlMethod) {
+            case RoleBased:
+                checkAccessControlPolicyRoleBased(functionName, userID);
+                break;
+            case ListBased:
+                checkAccessControlPolicyListBased(functionName, userID);
+                break;
+        }
+    }
+
+    private void checkAccessControlPolicyListBased(String functionName, String userID) {
+        try {
+            PreparedStatement stmt = connection
+                    .prepareStatement("select * from user_func_access where userod = ? and f_name = ?");
+            stmt.setString(1, userID);
+            stmt.setString(2, functionName);
+            ResultSet res = stmt.executeQuery();
+            if (!res.next()) {
+                throw new RuntimeException("User not authorized to call function: " + functionName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Internal server error");
+        }
+    }
+
+    private void checkAccessControlPolicyRoleBased(String functionName, String userID) {
         try {
             PreparedStatement stmt = connection.prepareStatement("select * from user_roles where userid = ?");
             stmt.setString(1, userID);

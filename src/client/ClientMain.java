@@ -25,13 +25,13 @@ public class ClientMain {
 
         Object printerObject = registry.lookup("printer");
         if (printerObject instanceof PrinterInterface rawPrinter) {
-            
+
             // For readability:
-            String username = "katten";
-            String password = "Hej123";
-            
+            String username = "Jens";
+            String password = "123";
+
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
-            printer.readConfig("jeg vil gerne printe noget coolio!");
+            printer.print("Jeeeens", "Karrrrrstenten");
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }
