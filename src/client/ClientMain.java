@@ -27,11 +27,11 @@ public class ClientMain {
         if (printerObject instanceof PrinterInterface rawPrinter) {
 
             // For readability:
-            String username = "Jens";
+            String username = "Bob";
             String password = "123";
 
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
-            printer.print("Jeeeens", "Karrrrrstenten");
+            printer.queue("Jeeeens");
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }

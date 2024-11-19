@@ -107,17 +107,18 @@ class Auth {
     private void checkAccessControlPolicyListBased(String functionName, String userID) {
         try {
             PreparedStatement stmt = connection
-                    .prepareStatement("select * from user_func_access where userod = ? and f_name = ?");
+                    .prepareStatement("select * from user_func_access where userid = ? and f_name = ?");
             stmt.setString(1, userID);
             stmt.setString(2, functionName);
             ResultSet res = stmt.executeQuery();
-            if (!res.next()) {
-                throw new RuntimeException("User not authorized to call function: " + functionName);
+            if (res.next()) {
+                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Internal server error");
         }
+        throw new RuntimeException("User not authorized to call function: " + functionName);
     }
 
     private void checkAccessControlPolicyRoleBased(String functionName, String userID) {
