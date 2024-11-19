@@ -1,5 +1,7 @@
 package shared;
 
-public record RoleChange(String username, String roleName) {
-    
+import java.io.Serializable;
+
+public record RoleChange(String username, String roleName) implements Serializable {
+
 }
