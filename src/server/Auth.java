@@ -46,17 +46,6 @@ class Auth {
     }
 
     public synchronized String authenticate(ClientSession clientSession) {
-        try {
-            PreparedStatement sslCheck = connection.prepareStatement("show variables like '%ssl%'");
-            ResultSet data = sslCheck.executeQuery();
-            while (data.next()) {
-                System.out.println(data.getString("Variable_name") + ": " + data.getString("Value"));
-            }
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
         ServerSession sSession = sessions.get(clientSession.token());
         // Ignore the info in clientSession. It is not to be trusted
         if (sSession == null) {

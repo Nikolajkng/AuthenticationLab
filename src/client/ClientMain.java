@@ -31,12 +31,12 @@ public class ClientMain {
 
             // rawPrinter.register("Bob", "123");
             // For readability:
-            String username = "Cecilia";
+            String username = "Bob";
             String password = "123";
 
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
 
-            printer.print("Jeeeee", "hawe");
+            printer.print("Jens", "karsten");
 
             // printer.updateRoles(
             // new RoleChange[] { new RoleChange("power-user", "Ida"), new
