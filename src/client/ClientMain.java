@@ -16,7 +16,10 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import shared.AccessChange;
+import shared.ClientSession;
 import shared.PrinterInterface;
+import shared.RoleChange;
 
 public class ClientMain {
     public static void main(String[] args)
@@ -26,12 +29,35 @@ public class ClientMain {
         Object printerObject = registry.lookup("printer");
         if (printerObject instanceof PrinterInterface rawPrinter) {
 
+            // rawPrinter.register("Bob", "123");
             // For readability:
-            String username = "Bob";
+            String username = "Cecilia";
             String password = "123";
 
             ClientPrinter printer = new ClientPrinter(username, password, rawPrinter);
-            printer.queue("Jeeeens");
+
+            printer.print("Jeeeee", "hawe");
+
+            // printer.updateRoles(
+            // new RoleChange[] { new RoleChange("power-user", "Ida"), new
+            // RoleChange("ordinary", "Henry") },
+            // new RoleChange[] { new RoleChange("technician", "Bob") });
+
+            // printer.updateAccessLists(
+            // new AccessChange[] {
+            // new AccessChange("queue", "Ida"),
+            // new AccessChange("restart", "Ida"),
+            // new AccessChange("topQueue", "Ida"),
+            // new AccessChange("print", "Ida"),
+            // new AccessChange("queue", "Henry"),
+            // new AccessChange("print", "Henry") },
+            // new AccessChange[] {
+            // new AccessChange("restart", "Bob"),
+            // new AccessChange("setConfig", "Bob"),
+            // new AccessChange("start", "Bob"),
+            // new AccessChange("stop", "Bob"),
+            // new AccessChange("readCondig", "Bob"),
+            // });
         } else {
             throw new RuntimeException("Failed to lookup printer");
         }

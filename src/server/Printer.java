@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import shared.PrinterInterface;
 import shared.RoleChange;
+import shared.AccessChange;
 import shared.ClientSession;
 
 public class Printer extends UnicastRemoteObject implements PrinterInterface {
@@ -100,6 +101,18 @@ public class Printer extends UnicastRemoteObject implements PrinterInterface {
     public ClientSession register(String username, String password) throws RemoteException {
         auth.register(username, password);
         return auth.login(username, password);
+    }
+
+    @Override
+    public void updateAccessLists(ClientSession session, AccessChange[] added, AccessChange[] removed)
+            throws RemoteException {
+
+        auth.checkAccessControlPolicy("updateRoles", auth.authenticate(session));
+        auth.updateAccessLists(added, removed);
+
+        System.out.println("Updated roles:");
+        System.out.println("Added: " + Arrays.toString(added));
+        System.out.println("Removed: " + Arrays.toString(removed));
     }
 
 }

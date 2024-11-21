@@ -26,6 +26,9 @@ public interface PrinterInterface extends Remote {
 
     public void updateRoles(ClientSession session, RoleChange[] added, RoleChange[] removed) throws RemoteException;
 
+    public void updateAccessLists(ClientSession session, AccessChange[] added, AccessChange[] removed)
+            throws RemoteException;
+
     public ClientSession login(String username, String password) throws RemoteException;
 
     public ClientSession register(String username, String password) throws RemoteException;

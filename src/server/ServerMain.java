@@ -17,6 +17,7 @@ import java.security.cert.CertificateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.Scanner;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -32,8 +33,11 @@ public class ServerMain {
             String DB_URL = databaseInfo[0];
             String DB_username = databaseInfo[1];
             String DB_password = databaseInfo[2];
-
-            Connection connection = DriverManager.getConnection(DB_URL, DB_username, DB_password);
+            Properties p = new Properties();
+            p.setProperty("user", DB_username);
+            p.setProperty("password", DB_password);
+            p.setProperty("sslMode", "trust");
+            Connection connection = DriverManager.getConnection(DB_URL, p);
 
             connection.setAutoCommit(true);
 

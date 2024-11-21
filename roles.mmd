@@ -1,0 +1,26 @@
+graph TD;
+
+admin --> power-user
+power-user --> ordinary
+admin --> technician
+
+Alice[[Alice]] --> admin
+Bob[[Bob]] --> technician
+Cecilia[[Cecilia]] --> power-user
+David[[David]] --> ordinary
+Erica[[Erica]] --> ordinary
+Fred[[Fred]] --> ordinary
+George[[George]] --> ordinary
+
+ordinary --> print([print])
+ordinary --> queue([print])
+
+admin --> updateRoles([updateRoles])
+power-user --> topQueue([topQueue])
+technician --> restart([restart])
+technician --> readConfig([readConfig])
+technician --> setConfig([setConfig])
+technician --> start([start])
+technician --> stop([stop])
+power-user --> restart([restart])
+

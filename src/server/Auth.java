@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.UUID;
 
+import shared.AccessChange;
 import shared.ClientSession;
 import shared.RoleChange;
 
@@ -24,7 +25,6 @@ class Auth {
     }
 
     public synchronized ClientSession login(String username, String password) {
-
         try {
             PreparedStatement stmt = connection
                     .prepareStatement(
@@ -41,18 +41,29 @@ class Auth {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        System.out.println("Failed login with username: " + username);
         throw new RuntimeException("Invalid username or password");
     }
 
     public synchronized String authenticate(ClientSession clientSession) {
+        try {
+            PreparedStatement sslCheck = connection.prepareStatement("show variables like '%ssl%'");
+            ResultSet data = sslCheck.executeQuery();
+            while (data.next()) {
+                System.out.println(data.getString("Variable_name") + ": " + data.getString("Value"));
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         ServerSession sSession = sessions.get(clientSession.token());
-        ClientSession session = sSession.clientsession();
         // Ignore the info in clientSession. It is not to be trusted
-        if (session == null) {
+        if (sSession == null) {
             // invalid session key
             throw new RuntimeException("Not authenticated");
         }
+        ClientSession session = sSession.clientsession();
 
         if (Duration.between(session.timestamp(), Instant.now()).getSeconds() > 60 * 10) {
             // Remove from hashmap and return false;
@@ -62,7 +73,7 @@ class Auth {
         return sSession.userID();
     }
 
-    public synchronized boolean register(String username, String password) {
+    public synchronized void register(String username, String password) {
         String salt = "" + new SecureRandom().nextInt();
         try {
             var stmt = connection
@@ -75,15 +86,15 @@ class Auth {
             int rows = stmt.executeUpdate();
             if (rows == 1) {
                 // Successfully inserted 1 user
-                return true;
+                return;
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new RuntimeException("Username already taken");
         } catch (Exception e) {
             e.printStackTrace();
-
+            throw new RuntimeException("Internal server error");
         }
-        return false;
-
     }
 
     enum AccessControlMethod {
@@ -91,7 +102,7 @@ class Auth {
         ListBased
     }
 
-    public AccessControlMethod accessControlMethod = AccessControlMethod.ListBased;
+    public AccessControlMethod accessControlMethod = AccessControlMethod.RoleBased;
 
     public void checkAccessControlPolicy(String functionName, String userID) {
         switch (accessControlMethod) {
@@ -162,12 +173,47 @@ class Auth {
         return false;
     }
 
+    public synchronized void updateAccessLists(AccessChange[] added, AccessChange[] removes) {
+        for (AccessChange add : added) {
+            try {
+                PreparedStatement stmt = connection
+                        .prepareStatement(
+                                "insert into user_func_access (f_name, userid )values (?,(select userid from users where username = ?))");
+
+                stmt.setString(1, add.functionName());
+                stmt.setString(2, add.username());
+                stmt.executeUpdate();
+
+            } catch (SQLIntegrityConstraintViolationException e) {
+                System.out.println("User access duplicate ignored: " + add);
+                continue;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Internval server error");
+            }
+        }
+        for (AccessChange rem : removes) {
+            try {
+                PreparedStatement stmt = connection
+                        .prepareStatement(
+                                "delete from user_func_access where f_name = ? and userid in (select userid from users where username = ?)");
+
+                stmt.setString(1, rem.functionName());
+                stmt.setString(2, rem.username());
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Internval server error");
+            }
+        }
+
+    }
+
     public synchronized void updateRoles(RoleChange[] added, RoleChange[] removes) {
         // Has to be syncronzied to avoid role update race condition
 
         for (RoleChange add : added) {
             try {
-                // Fetch current roles
                 PreparedStatement stmt = connection
                         .prepareStatement(
                                 "insert into user_roles (r_name, userid )values (?,(select userid from users where username = ?))");

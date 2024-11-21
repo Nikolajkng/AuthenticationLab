@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import shared.PrinterInterface;
 import shared.RoleChange;
+import shared.AccessChange;
 import shared.ClientSession;
 
 public class ClientPrinter {
@@ -54,5 +55,9 @@ public class ClientPrinter {
 
     public void updateRoles(RoleChange[] added, RoleChange[] removed) throws RemoteException {
         this.printer.updateRoles(session, added, removed);
+    }
+
+    public void updateAccessLists(AccessChange[] added, AccessChange[] removed) throws RemoteException {
+        this.printer.updateAccessLists(session, added, removed);
     }
 }
