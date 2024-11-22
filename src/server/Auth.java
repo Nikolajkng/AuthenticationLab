@@ -89,7 +89,7 @@ class Auth {
     enum AccessControlMethod {
         RoleBased,
         ListBased
-    }
+    } 
 
     public AccessControlMethod accessControlMethod = AccessControlMethod.RoleBased;
 
